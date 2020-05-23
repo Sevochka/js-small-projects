@@ -1,0 +1,26 @@
+.box{
+    overflow: scroll;
+    height: 400px;
+    flex: 1;
+    box-sizing: border-box;
+}
+
+.container{
+    width: 400px;
+    margin: 40px auto;
+    display: flex;
+}
+
+button{
+    width: 100px;
+    background-color: lightblue;
+    margin-top: 10px;
+    margin-left: 30px;
+    border: 3px solid red;
+}
+
+.toolbar{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: auto;
+}
