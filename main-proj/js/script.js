@@ -39,7 +39,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Timer
 
-    let deadline = '2020-05-24';
+    //'2020-05-24'
+    let deadline = new Date().toISOString(),
+        days = +deadline.slice(8,10);
+    deadline = deadline.slice(0, 10);
+    deadline = deadline.replace(days, ++days);
+    
 
     function getRemainingTime(endtime) {
         let total = Date.parse(endtime) - Date.parse(new Date()),
@@ -86,6 +91,40 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     setClock('timer', deadline);
+
+    // Modal window
+
+    let more = document.querySelector('.more'),
+        overlay = document.querySelector('.overlay'),
+        closeBtn = document.querySelector('.popup-close'),
+        tabsModalToggle = document.querySelectorAll('.description-btn');
+
+    function toggleModal(flag) {
+        if (flag) {
+            overlay.style.display = 'block';
+            this.classList.add('more-splash');
+            document.body.style.overflow = 'hidden'; 
+        } else {
+            overlay.style.display = 'none';
+            this.classList.remove('more-splash');
+            document.body.style.overflow = '';
+        }
+    }
+
+    tabsModalToggle.forEach((el) => {
+        el.addEventListener('click', function() {
+            toggleModal.call(this, true);
+        })
+    });
+
+    more.addEventListener('click', function () {
+       toggleModal.call(this, true);
+    });
+
+    closeBtn.addEventListener('click', function () {
+        toggleModal.call(this, false);
+    })
+
 });
 
 
