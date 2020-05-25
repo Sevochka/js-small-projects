@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
     function showTabContent(b) {
         if (tabContent[b].classList.contains('hide')) {
             tabContent[b].classList.add('show');
-            tabContent[b].classList.hide('hide');
+            tabContent[b].classList.remove('hide');
         }
     }
 
@@ -41,10 +41,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     //'2020-05-24'
     let deadline = new Date().toISOString(),
-        days = +deadline.slice(8,10);
+        days = +deadline.slice(8, 10);
     deadline = deadline.slice(0, 10);
     deadline = deadline.replace(days, ++days);
-    
+
 
     function getRemainingTime(endtime) {
         let total = Date.parse(endtime) - Date.parse(new Date()),
@@ -103,7 +103,7 @@ window.addEventListener('DOMContentLoaded', () => {
         if (flag) {
             overlay.style.display = 'block';
             this.classList.add('more-splash');
-            document.body.style.overflow = 'hidden'; 
+            document.body.style.overflow = 'hidden';
         } else {
             overlay.style.display = 'none';
             this.classList.remove('more-splash');
@@ -112,18 +112,110 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     tabsModalToggle.forEach((el) => {
-        el.addEventListener('click', function() {
+        el.addEventListener('click', function () {
             toggleModal.call(this, true);
         })
     });
 
     more.addEventListener('click', function () {
-       toggleModal.call(this, true);
+        toggleModal.call(this, true);
     });
 
     closeBtn.addEventListener('click', function () {
         toggleModal.call(this, false);
     })
+
+    // Forms 
+
+    let message = {
+        loading: 'Загрузка',
+        success: 'Спасибо! Скоро мы с вами свяжемся!',
+        failure: 'Что-то пошло не так...'
+    };
+
+    let form = document.querySelector('.main-form'),
+        input = form.getElementsByTagName('input'),
+        statusMessage = document.createElement('div');
+
+    statusMessage.classList.add('status');
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        form.appendChild(statusMessage);
+
+        let request = new XMLHttpRequest();
+        request.open('POST', '../server.php');
+        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+        let formData = new FormData(form);
+
+        let obj = {};
+        formData.forEach((el, key) => {
+            obj[key] = el;
+        });
+
+        let json = JSON.stringify(obj);
+
+        request.send(json);
+
+        request.addEventListener('readystatechange', function () {
+            if (request.readyState < 4) {
+                statusMessage.textContent = message.loading;
+            } else if (request.readyState === 4 && request.status === 200) {
+                statusMessage.textContent = message.success;
+            } else {
+                statusMessage.textContent = message.failure;
+            }
+        });
+
+        for (let i = 0; i < input.length; i++) {
+            const element = input[i];
+            element.value = '';
+        };
+
+    });
+
+    // Контактная форма
+    let contactForm = document.getElementById('form'),
+        inputs = contactForm.querySelectorAll('input'),
+        contactStatus = document.createElement('div');
+
+    contactStatus.classList.add('status');
+    contactStatus.style.color = 'white';
+    contactForm.appendChild(contactStatus);
+
+    contactForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        let request = new XMLHttpRequest();
+        request.open('POST', '../server.php');
+        request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+        let formData = new FormData(contactForm);
+
+        let obj = {};
+        formData.forEach((el, key) => {
+            obj[key] = el;
+        });
+
+        let json = JSON.stringify(obj);
+        request.send(json);
+
+        request.addEventListener('readystatechange', () => {
+            if (request.readyState < 4) {
+                contactStatus.textContent = message.loading;
+            } else if (request.readyState === 4 && request.status === 200) {
+                contactStatus.textContent = message.success;
+            } else {
+                contactStatus.textContent = message.failure;
+            }
+        });
+        
+        inputs.forEach((el) => {
+            el.value = "";
+        })
+    });
+
 
 });
 
